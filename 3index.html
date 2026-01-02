@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jikoli</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        :root {
+            --primary: #FF6600;
+            --primary-dark: #E65C00;
+            --primary-light: #FF8533;
+            --bg: #111111;
+            --card-bg: #1A1A1A;
+            --text: #FFFFFF;
+            --text-secondary: #AAAAAA;
+            --border: #333333;
+            --success: #4CAF50;
+            --error: #F44336;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* Боковая панель */
+        .sidebar {
+            width: 250px;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .sidebar-item {
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(255, 102, 0, 0.1);
+            color: var(--primary);
+        }
+
+        .sidebar-item.active {
+            background-color: rgba(255, 102, 0, 0.15);
+            color: var(--primary);
+            border-left: 4px solid var(--primary);
+        }
+
+        .sidebar-item i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Основной контент */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .screen.active {
+            display: flex;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 40px;
+            letter-spacing: -1px;
+            text-align: center;
+        }
+
+        .logo span {
+            color: var(--text);
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            text-align: center;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+
+        /* Кнопки */
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Контейнеры */
+        .form-container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .buttons-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 30px;
+        }
+
+        .menu-btn {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 15px;
+            padding: 25px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .menu-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .menu-btn i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .menu-btn h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .menu-btn p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Настройки звука */
+        .sound-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .sound-toggle span {
+            flex: 1;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        /* Рандомные числа */
+        .radio-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .radio-btn {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 15px;
+            min-width: 120px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-btn.selected {
+            border-color: var(--primary);
+            background-color: rgba(255, 102, 0, 0.1);
+        }
+
+        .random-result {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s;
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            border-left-color: var(--error);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 10px;
+            }
+            
+            .sidebar-header {
+                display: none;
+            }
+            
+            .sidebar-section {
+                display: none;
+            }
+            
+            .sidebar-item {
+                padding: 10px 15px;
+                white-space: nowrap;
+            }
+            
+            .content {
+                height: calc(100vh - 80px);
+            }
+            
+            .screen {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+                margin-bottom: 30px;
+            }
+            
+            .buttons-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Левая панель -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">JIKOLI</div>
+            <div style="color: var(--text-secondary); font-size: 0.9rem;">Минималистичная платформа</div>
+        </div>
+        
+        <div class="sidebar-item active" data-screen="main">
+            <i class="fas fa-home"></i>
+            <span>Главная</span>
+        </div>
+        
+        <div class="sidebar-item" data-screen="news">
+            <i class="fas fa-newspaper"></i>
+            <span>Новости</span>
+        </div>
+        
+        <div class="sidebar-item" data-screen="random">
+            <i class="fas fa-random"></i>
+            <span>Рандомное число</span>
+        </div>
+        
+        <div class="sidebar-section">
+            <div class="sound-toggle">
+                <span>Звук</span>
+                <label class="switch">
+                    <input type="checkbox" id="soundToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="sidebar-item" id="resetDataBtn">
+                <i class="fas fa-trash"></i>
+                <span>Сбросить данные</span>
+            </div>
+        </div>
+    </div>
+<!-- Основной контент -->
+<div class="content">
+    <!-- Главный экран -->
+    <div id="mainScreen" class="screen active">
+        <h1 class="logo">JIKO<span>LI</span></h1>
+        
+        <div class="buttons-container">
+            <div class="menu-btn" id="newsButton">
+                <i class="fas fa-newspaper"></i>
+                <h3>Новости</h3>
+                <p>Узнайте последние обновления</p>
+            </div>
+            
+            <div class="menu-btn" id="randomButton">
+                <i class="fas fa-random"></i>
+                <h3>Рандомное число</h3>
+                <p>Получите случайное число</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Экран новостей -->
+    <div id="newsScreen" class="screen">
+        <h1 class="logo">Новост<span>и</span></h1>
+        
+        <div class="form-container">
+            <h2 class="form-title">Важное обновление</h2>
+            <p style="line-height: 1.6; text-align: center;">
+                Мы будем обновлять бота и дальше, теперь вы видите почему не было так долго обновлений.
+                Работаем над улучшениями и новыми функциями. Спасибо за ваше терпение!
+            </p>
+        </div>
+    </div>
+    
+    <!-- Экран рандомного числа -->
+    <div id="randomScreen" class="screen">
+        <h1 class="logo">Рандомное <span>число</span></h1>
+        <p class="subtitle">Выберите диапазон и получите случайное число</p>
+        
+        <div class="radio-group">
+            <div class="radio-btn" data-range="10">
+                <h3>1/10</h3>
+                <p>От 1 до 10</p>
+            </div>
+            
+            <div class="radio-btn" data-range="30">
+                <h3>1/30</h3>
+                <p>От 1 до 30</p>
+            </div>
+            
+            <div class="radio-btn" data-range="50">
+                <h3>1/50</h3>
+                <p>От 1 до 50</p>
+            </div>
+        </div>
+        
+        <div id="randomResult" class="random-result">?</div>
+        
+        <button id="generateRandomButton" class="btn" style="max-width: 300px;" disabled>
+            <i class="fas fa-dice"></i> Сгенерировать число
+        </button>
+    </div>
+    
+    <!-- Уведомление -->
+    <div id="notification" class="notification">
+        <div id="notificationText">Текст уведомления</div>
+    </div>
+</div>
+    <script>
+        // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
+        let selectedRange = null;
+
+        // ========== ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ ==========
+        function switchScreen(screenId) {
+            console.log('Переключаем на экран:', screenId);
+            
+            // Скрываем все экраны
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Показываем нужный экран
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+                updateSidebar(screenId);
+            }
+        }
+
+        // ========== ОБНОВЛЕНИЕ БОКОВОЙ ПАНЕЛИ ==========
+        function updateSidebar(screenId) {
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Находим соответствующий элемент в сайдбаре
+            let sidebarItem = null;
+            switch(screenId) {
+                case 'mainScreen':
+                    sidebarItem = document.querySelector('.sidebar-item[data-screen="main"]');
+                    break;
+                case 'newsScreen':
+                    sidebarItem = document.querySelector('.sidebar-item[data-screen="news"]');
+                    break;
+                case 'randomScreen':
+                    sidebarItem = document.querySelector('.sidebar-item[data-screen="random"]');
+                    break;
+            }
+            
+            if (sidebarItem) {
+                sidebarItem.classList.add('active');
+            }
+        }
+
+        // ========== ПОКАЗ УВЕДОМЛЕНИЯ ==========
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            const text = document.getElementById('notificationText');
+            
+            if (!notification || !text) return;
+            
+            text.textContent = message;
+            notification.classList.remove('error');
+            
+            if (isError) {
+                notification.classList.add('error');
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // ========== ЗАГРУЗКА ДАННЫХ ==========
+        function loadData() {
+            // Загружаем настройку звука
+            const savedSound = localStorage.getItem('jikoli_sound');
+            const soundToggle = document.getElementById('soundToggle');
+            if (soundToggle && savedSound !== null) {
+                soundToggle.checked = savedSound === 'true';
+            }
+        }
+
+        // ========== ГЕНЕРАЦИЯ СЛУЧАЙНОГО ЧИСЛА ==========
+        function generateRandomNumber() {
+            if (!selectedRange) {
+                showNotification('Выберите диапазон', true);
+                return;
+            }
+            
+            const randomNumber = Math.floor(Math.random() * selectedRange) + 1;
+            document.getElementById('randomResult').textContent = randomNumber;
+            showNotification(`Случайное число: ${randomNumber} (1-${selectedRange})`);
+            
+            // Воспроизводим звук если включен
+            const soundToggle = document.getElementById('soundToggle');
+            if (soundToggle && soundToggle.checked) {
+                playSound();
+            }
+        }
+
+        // ========== ЗВУКОВОЙ ЭФФЕКТ ==========
+        function playSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch(e) {
+                console.log('Звук не поддерживается');
+            }
+        }
+
+        // ========== СБРОС ВСЕХ ДАННЫХ ==========
+        function resetApp() {
+            if (confirm('Вы уверены, что хотите сбросить все данные?')) {
+                localStorage.clear();
+                showNotification('Все данные сброшены');
+                // Сбрасываем звук на включенный
+                document.getElementById('soundToggle').checked = true;
+                localStorage.setItem('jikoli_sound', 'true');
+                switchScreen('mainScreen');
+            }
+        }
+
+        // ========== НАСТРОЙКА ОБРАБОТЧИКОВ СОБЫТИЙ ==========
+        function setupEventListeners() {
+            console.log('Настраиваем обработчики событий...');
+            
+            // 1. Навигация в боковой панели
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const screen = this.getAttribute('data-screen');
+                    switch(screen) {
+                        case 'main':
+                            switchScreen('mainScreen');
+                            break;
+                        case 'news':
+                            switchScreen('newsScreen');
+                            break;
+                        case 'random':
+                            // Сброс состояния рандома
+                            document.querySelectorAll('.radio-btn').forEach(btn => btn.classList.remove('selected'));
+                            document.getElementById('randomResult').textContent = '?';
+                            document.getElementById('generateRandomButton').disabled = true;
+                            selectedRange = null;
+                            switchScreen('randomScreen');
+                            break;
+                    }
+                });
+            });
+            
+            // 2. Навигация по главному меню
+            document.getElementById('newsButton').addEventListener('click', () => switchScreen('newsScreen'));
+            document.getElementById('randomButton').addEventListener('click', () => {
+                document.querySelectorAll('.radio-btn').forEach(btn => btn.classList.remove('selected'));
+                document.getElementById('randomResult').textContent = '?';
+                document.getElementById('generateRandomButton').disabled = true;
+                selectedRange = null;
+                switchScreen('randomScreen');
+            });
+            
+            // 3. Выбор диапазона для рандома
+            document.querySelectorAll('.radio-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedRange = parseInt(this.getAttribute('data-range'));
+                    document.getElementById('generateRandomButton').disabled = false;
+                });
+            });
+            
+            // 4. Генерация случайного числа
+            document.getElementById('generateRandomButton').addEventListener('click', generateRandomNumber);
+            
+            // 5. Сброс данных
+            document.getElementById('resetDataBtn').addEventListener('click', resetApp);
+            
+            // 6. Настройка звука
+            const soundToggle = document.getElementById('soundToggle');
+            if (soundToggle) {
+                soundToggle.addEventListener('change', function() {
+                    localStorage.setItem('jikoli_sound', this.checked);
+                    showNotification(`Звук ${this.checked ? 'включен' : 'выключен'}`);
+                });
+            }
+            
+            console.log('Обработчики событий настроены');
+        }
+
+        // ========== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM загружен, инициализируем приложение...');
+            
+            // Загружаем данные
+            loadData();
+            
+            // Настраиваем обработчики
+            setupEventListeners();
+            
+            console.log('Приложение инициализировано');
+        });
+
+        // ========== ГЛОБАЛЬНАЯ ФУНКЦИЯ ДЛЯ ОТЛАДКИ ==========
+        window.debugApp = function() {
+            console.log('=== ДЕБАГ ИНФОРМАЦИЯ ===');
+            console.log('Выбранный диапазон:', selectedRange);
+            console.log('Активный экран:', document.querySelector('.screen.active')?.id);
+        };
+    </script>
+</body>
+</html>
